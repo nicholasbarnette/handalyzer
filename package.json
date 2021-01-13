@@ -1,0 +1,12 @@
+{
+  "name": "poker-analyzer",
+  "version": "1.0.0",
+  "description": "A poker hand analyzer.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run unit:game",
+    "unit:game": "cd ./src && python -m unittest -b test_game.py"
+  },
+  "author": "Nick Barnette",
+  "license": "UNLICENSED"
+}
