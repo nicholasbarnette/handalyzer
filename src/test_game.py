@@ -430,3 +430,39 @@ class TestGame(unittest.TestCase):
             ),
             9,
         )
+
+    def test_insert_ordered(self):
+        self.assertSequenceEqual(
+            self.game._insert_ordered([], {"id": 0, "value": 55}),
+            [{"id": 0, "value": 55}],
+        )
+        self.assertSequenceEqual(
+            self.game._insert_ordered([{"id": 0, "value": 55}], {"id": 0, "value": 58}),
+            [{"id": 0, "value": 58}, {"id": 0, "value": 55}],
+        )
+        self.assertSequenceEqual(
+            self.game._insert_ordered([{"id": 0, "value": 55}], {"id": 0, "value": 52}),
+            [{"id": 0, "value": 55}, {"id": 0, "value": 52}],
+        )
+        self.assertSequenceEqual(
+            self.game._insert_ordered(
+                [
+                    {"id": 0, "value": 55},
+                    {"id": 0, "value": 52},
+                    {"id": 0, "value": 51},
+                ],
+                {"id": 0, "value": 53},
+            ),
+            [
+                {"id": 0, "value": 55},
+                {"id": 0, "value": 53},
+                {"id": 0, "value": 52},
+                {"id": 0, "value": 51},
+            ],
+        )
+
+    def test_find_outcome(self):
+        self.assertSequenceEqual(
+            self.game._find_outcome([], {"id": 0, "value": 55}),
+            [{"id": 0, "value": 55}],
+        )

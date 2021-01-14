@@ -9,6 +9,9 @@ class Player:
     def get_hand(self):
         return self.hand
 
+    def get_id(self):
+        return self.id
+
     def __str__(self):
         s = "Player %d: " % (self.id)
         if len(self.hand) == 0:

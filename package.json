@@ -4,6 +4,7 @@
   "description": "A poker hand analyzer.",
   "main": "index.js",
   "scripts": {
+    "build": "python src/index.py",
     "test": "npm run unit:game",
     "unit:game": "cd ./src && python -m unittest -b test_game.py"
   },

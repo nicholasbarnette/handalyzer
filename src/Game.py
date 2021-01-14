@@ -29,9 +29,168 @@ class Game:
     def get_player(self, id):
         return self.players[id]
 
-    def find_outcome(self, hand):
-        pool = hand + self.house
-        return self.outcome
+    def find_outcome(self):
+        hand_outcomes = {
+            "royal_flush": [],
+            "straight_flush": [],
+            "four_kind": [],
+            "full_house": [],
+            "flush": [],
+            "straight": [],
+            "three_kind": [],
+            "two_pair": [],
+            "pair": [],
+            "high": [],
+        }
+        for p in self.players:
+            pool = p.get_hand() + self.house
+
+            if self._is_royal_flush(pool):
+                hand_outcomes["royal_flush"].append(
+                    {"id": p.get_id(), "type": "royal_flush", "value": 55}
+                )
+            elif self._is_straight_flush(pool):
+                p_hand = self._calculate_hand_value(pool)
+                hand_outcomes["straight_flush"] = self._insert_ordered(
+                    hand_outcomes["straight_flush"],
+                    {"id": p.get_id(), "type": "straight_flush", "value": p_hand},
+                )
+            elif self._is_four_of_kind(pool):
+                if self._find_duplicates(pool[0].get_value(), pool) == 4:
+                    hand_outcomes["four_kind"] = self._insert_ordered(
+                        hand_outcomes["four_kind"],
+                        {
+                            "id": p.get_id(),
+                            "type": "four_kind",
+                            "value": pool[0].get_value() * 4,
+                        },
+                    )
+                else:
+                    hand_outcomes["four_kind"] = self._insert_ordered(
+                        hand_outcomes["four_kind"],
+                        {
+                            "id": p.get_id(),
+                            "type": "four_kind",
+                            "value": pool[1].get_value() * 4,
+                        },
+                    )
+            elif self._is_full_house(pool):
+                if self._find_duplicates(pool[0].get_value(), pool) == 3:
+                    hand_outcomes["full_house"] = self._insert_ordered(
+                        hand_outcomes["full_house"],
+                        {
+                            "id": p.get_id(),
+                            "type": "full_house",
+                            "value": pool[0].get_value() * 3 + pool[1].get_value() * 2,
+                        },
+                    )
+                else:
+                    hand_outcomes["full_house"] = self._insert_ordered(
+                        hand_outcomes["full_house"],
+                        {
+                            "id": p.get_id(),
+                            "type": "full_house",
+                            "value": pool[0].get_value() * 2 + pool[1].get_value() * 3,
+                        },
+                    )
+            elif self._is_flush(pool):
+                hand_outcomes["flush"].append(
+                    {"id": p.get_id(), "type": "flush", "value": 55}
+                )
+            elif self._is_straight(pool):
+                p_hand = self._calculate_hand_value(pool)
+                hand_outcomes["straight"] = self._insert_ordered(
+                    hand_outcomes["straight"],
+                    {"id": p.get_id(), "type": "straight", "value": p_hand},
+                )
+            elif self._is_three_of_kind(pool):
+                if self._find_duplicates(pool[0].get_value(), pool) == 3:
+                    hand_outcomes["three_kind"] = self._insert_ordered(
+                        hand_outcomes["three_kind"],
+                        {
+                            "id": p.get_id(),
+                            "type": "three_kind",
+                            "value": pool[0].get_value() * 3,
+                        },
+                    )
+                else:
+                    hand_outcomes["three_kind"] = self._insert_ordered(
+                        hand_outcomes["three_kind"],
+                        {
+                            "id": p.get_id(),
+                            "type": "three_kind",
+                            "value": pool[1].get_value() * 3,
+                        },
+                    )
+            elif self._is_two_pair(pool):
+                if (
+                    self._find_duplicates(pool[0].get_value(), pool) == 2
+                    and self._find_duplicates(pool[1].get_value(), pool) == 2
+                ):
+                    hand_outcomes["two_pair"] = self._insert_ordered(
+                        hand_outcomes["two_pair"],
+                        {
+                            "id": p.get_id(),
+                            "type": "two_pair",
+                            "value": pool[0].get_value() * 2 + pool[1].get_value() * 2,
+                        },
+                    )
+            elif self._is_pair(pool):
+                if self._find_duplicates(pool[0].get_value(), pool) == 2:
+                    hand_outcomes["pair"] = self._insert_ordered(
+                        hand_outcomes["pair"],
+                        {
+                            "id": p.get_id(),
+                            "type": "pair",
+                            "value": pool[0].get_value() * 2,
+                        },
+                    )
+                else:
+                    hand_outcomes["pair"] = self._insert_ordered(
+                        hand_outcomes["pair"],
+                        {
+                            "id": p.get_id(),
+                            "type": "pair",
+                            "value": pool[1].get_value() * 2,
+                        },
+                    )
+            else:
+                h = 0
+                for c in p.get_hand():
+                    h = max(h, c.get_value())
+                hand_outcomes["high"] = self._insert_ordered(
+                    hand_outcomes["high"],
+                    {
+                        "id": p.get_id(),
+                        "type": "high",
+                        "value": h,
+                    },
+                )
+
+        out = []
+        for k in hand_outcomes.keys():
+            out = out + hand_outcomes[k]
+        return out
+
+    def _calculate_hand_value(self, pool):
+        hand_value = 0
+        for c in pool:
+            hand_value += c.get_value()
+        return hand_value
+
+    def _insert_ordered(self, a, o):
+        na = a
+        if len(na) == 0:
+            na.append(o)
+        else:
+            for i, p in enumerate(na):
+                if o["value"] > p["value"]:
+                    na.insert(i, o)
+                    break
+                elif i == len(na) - 1:
+                    na.append(o)
+                    break
+        return na
 
     # Hand value highest to lowest
     # 1. Royal Flush
@@ -92,10 +251,6 @@ class Game:
             return False
 
     def _is_full_house(self, pool):
-        print(
-            self._find_duplicates(pool[0].get_value(), pool),
-            self._find_duplicates(pool[1].get_value(), pool),
-        )
         if (
             self._find_duplicates(pool[0].get_value(), pool) == 3
             and self._find_duplicates(pool[1].get_value(), pool) == 2
@@ -120,6 +275,7 @@ class Game:
         if (
             self._find_duplicates(pool[0].get_value(), pool) == 2
             and self._find_duplicates(pool[1].get_value(), pool) == 2
+            and pool[0].get_value() != pool[1].get_value()
         ):
             return True
         else:
