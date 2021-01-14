@@ -3,20 +3,28 @@ from Player import Player
 
 
 class Game:
-    def __init__(self, num_players=10):
-        self.deck = Deck()
+    def __init__(
+        self,
+        player=None,
+        num_players=9,
+    ):
+        self.deck = Deck(exclude=player.get_hand() if player != None else [])
         self.deck.shuffle()
         self.players = []
-        for p in range(0, num_players):
-            self.players.append(Player(p))
+        if player != None:
+            self.players.append(player)
+        for p in range(1, num_players):
+            self.players.append(Player(id=p))
         self.house = []
         self.outcome = []
 
     def deal(self):
-        for p in self.players:
-            p.add_card(self.deck.deal())
-        for p in self.players:
-            p.add_card(self.deck.deal())
+        for i, p in enumerate(self.players):
+            if len(p.get_hand()) == 0:
+                p.add_card(self.deck.deal())
+        for i, p in enumerate(self.players):
+            if len(p.get_hand()) == 1:
+                p.add_card(self.deck.deal())
         for i in range(0, 5):
             self.house.append(self.deck.deal())
 

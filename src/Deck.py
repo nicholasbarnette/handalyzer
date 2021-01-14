@@ -3,15 +3,21 @@ from random import randint
 
 
 class Deck:
-    def __init__(self):
-        self.deck = self._generate_deck()
-        self.length = 52
+    def __init__(self, exclude=[]):
+        self.deck = self._generate_deck(exclude=exclude)
+        self.length = len(self.deck)
 
-    def _generate_deck(self):
+    def _generate_deck(self, exclude):
         d = []
         for s in SUITS:
             for r in RANKS:
-                d.append(Card(r, s))
+                add = True
+                for c in exclude:
+                    if c.get_rank() == r and c.get_suit() == s:
+                        add = False
+                        break
+                if add:
+                    d.append(Card(r, s))
         return d
 
     def shuffle(self):
@@ -20,7 +26,7 @@ class Deck:
             b = randint(0, self.length - 1)
             if a == b:
                 b = a + 1
-                if b > 51:
+                if b > self.length - 1:
                     b = 0
             tmp_card = self.deck[a]
             self.deck[a] = self.deck[b]

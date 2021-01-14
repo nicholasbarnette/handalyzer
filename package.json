@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "python src/index.py",
-    "test": "npm run unit:game",
-    "unit:game": "cd ./src && python -m unittest -b test_game.py"
+    "test": "npm run unit:card && npm run unit:player && npm run unit:deck && npm run unit:game",
+    "unit:game": "cd ./src && python -m unittest -b test_game.py",
+    "unit:card": "cd ./src && python -m unittest -b test_card.py",
+    "unit:player": "cd ./src && python -m unittest -b test_player.py",
+    "unit:deck": "cd ./src && python -m unittest -b test_deck.py"
   },
   "author": "Nick Barnette",
   "license": "UNLICENSED"

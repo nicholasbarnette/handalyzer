@@ -462,7 +462,6 @@ class TestGame(unittest.TestCase):
         )
 
     def test_find_outcome(self):
-        self.assertSequenceEqual(
-            self.game._find_outcome([], {"id": 0, "value": 55}),
-            [{"id": 0, "value": 55}],
-        )
+        game = Game()
+        game.deal()
+        self.assertEqual(len(game.find_outcome()), len(game.players))

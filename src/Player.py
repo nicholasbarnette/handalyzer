@@ -1,10 +1,13 @@
 class Player:
-    def __init__(self, id):
+    def __init__(self, id, hand=[]):
         self.id = id
-        self.hand = []
+        self.hand = hand[0:2]
 
     def add_card(self, card):
-        self.hand.append(card)
+        if len(self.hand) < 2:
+            self.hand.append(card)
+            return True
+        return False
 
     def get_hand(self):
         return self.hand
