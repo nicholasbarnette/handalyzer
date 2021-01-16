@@ -3,24 +3,43 @@ from Player import Player
 from Card import Card
 
 
-c1 = Card(rank="Ace", suit="Diamond")
-c2 = Card(rank="Ace", suit="Spade")
-PLAYER = Player(id=0, hand=[c1, c2])
+PLAYERS = [
+    Player(
+        id=0, hand=[Card(rank="Ace", suit="Diamond"), Card(rank="Ace", suit="Spade")]
+    ),
+    Player(id=1, hand=[Card(rank="Ace", suit="Club"), Card(rank="Ace", suit="Heart")]),
+    Player(
+        id=2,
+        hand=[Card(rank="Queen", suit="Diamond"), Card(rank="Jack", suit="Spade")],
+    ),
+]
 HANDS = 10000
 
 
 def run_hands():
-    wins = 0
+    wins = {}
     for i in range(HANDS):
-        g = Game(player=PLAYER)
+        g = Game(players=PLAYERS)
         g.deal()
-        if g.find_outcome()[0]["id"] == 0:
-            wins += 1
-    print(
-        "Win Percent [%s %s]: %d"
-        % (str(c1), str(c2), round(wins / HANDS * 10000) / 100)
-        + "%"
-    )
+        outcome = g.find_outcome()
+
+        if not outcome[0]["id"] in wins.keys():
+            wins[outcome[0]["id"]] = 1
+        else:
+            wins[outcome[0]["id"]] += 1
+
+    for p in wins.keys():
+        h = PLAYERS[p].get_hand()
+        print(
+            "Player %d Win Percent [%s %s]: %d"
+            % (
+                p,
+                str(h[0]),
+                str(h[1]),
+                round(wins[p] / HANDS * 1000) / 10,
+            )
+            + "%"
+        )
 
 
 run_hands()

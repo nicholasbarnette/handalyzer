@@ -5,16 +5,21 @@ from Player import Player
 class Game:
     def __init__(
         self,
-        player=None,
+        players=[],
         num_players=9,
     ):
-        self.deck = Deck(exclude=player.get_hand() if player != None else [])
-        self.deck.shuffle()
         self.players = []
-        if player != None:
-            self.players.append(player)
-        for p in range(1, num_players):
-            self.players.append(Player(id=p))
+        excluded_cards = []
+        if len(players) > 0:
+            for p in players:
+                self.players.append(p)
+                for c in p.get_hand():
+                    excluded_cards.append(c)
+        else:
+            for p in range(1, num_players):
+                self.players.append(Player(id=p))
+        self.deck = Deck(exclude=excluded_cards)
+        self.deck.shuffle()
         self.house = []
         self.outcome = []
 
