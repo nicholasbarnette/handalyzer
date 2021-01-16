@@ -1045,3 +1045,40 @@ class TestGame(unittest.TestCase):
             ),
             [10, 10, 10, 10, 3],
         )
+
+    def test_deal_partial(self):
+        game = Game()
+        self.assertEqual(len(game.get_house()), 0)
+        game.deal_flop()
+        self.assertEqual(len(game.get_house()), 3)
+        game.deal_turn()
+        self.assertEqual(len(game.get_house()), 4)
+        game.deal_river()
+        self.assertEqual(len(game.get_house()), 5)
+
+    def test_set_house(self):
+        game = Game(
+            house=[
+                Card(rank="King", suit="Spade"),
+                Card(rank="King", suit="Club"),
+                Card(rank="King", suit="Diamond"),
+            ]
+        )
+        self.assertEqual(len(game.get_house()), 3)
+        game.deal_flop()
+        self.assertEqual(len(game.get_house()), 3)
+        game.deal_turn()
+        self.assertEqual(len(game.get_house()), 4)
+        game.deal_river()
+        self.assertEqual(len(game.get_house()), 5)
+        game = Game(
+            house=[
+                Card(rank="King", suit="Spade"),
+                Card(rank="King", suit="Club"),
+                Card(rank="King", suit="Diamond"),
+                Card(rank="Ten", suit="Spade"),
+                Card(rank="Ten", suit="Club"),
+                Card(rank="Ten", suit="Diamond"),
+            ]
+        )
+        self.assertEqual(len(game.get_house()), 5)

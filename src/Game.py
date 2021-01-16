@@ -3,13 +3,9 @@ from Player import Player
 
 
 class Game:
-    def __init__(
-        self,
-        players=[],
-        num_players=9,
-    ):
+    def __init__(self, players=[], num_players=9, house=[]):
         self.players = []
-        excluded_cards = []
+        excluded_cards = house[0:5]
         if len(players) > 0:
             for p in players:
                 self.players.append(p)
@@ -19,7 +15,7 @@ class Game:
             self.players.append(Player(id=p))
         self.deck = Deck(exclude=excluded_cards)
         self.deck.shuffle()
-        self.house = []
+        self.house = house[0:5]
         self.outcome = []
 
     def deal(self):
@@ -29,14 +25,24 @@ class Game:
         for i, p in enumerate(self.players):
             if len(p.get_hand()) == 1:
                 p.add_card(self.deck.deal())
-        for i in range(0, 5):
-            self.house.append(self.deck.deal())
+
+    def deal_flop(self):
+        if len(self.house) < 3:
+            for i in range(0, 3 - len(self.house)):
+                self.house.append(self.deck.deal())
+
+    def deal_turn(self):
+        if len(self.house) < 4:
+            for i in range(0, 4 - len(self.house)):
+                self.house.append(self.deck.deal())
+
+    def deal_river(self):
+        if len(self.house) < 5:
+            for i in range(0, 5 - len(self.house)):
+                self.house.append(self.deck.deal())
 
     def get_house(self):
-        r = "House: "
-        for c in self.house:
-            r += str(c) + ", "
-        return r[:-2]
+        return self.house
 
     def get_player(self, id):
         return self.players[id]
