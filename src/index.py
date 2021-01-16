@@ -14,12 +14,13 @@ PLAYERS = [
     ),
 ]
 HANDS = 10000
+NUM_PLAYERS = 4
 
 
 def run_hands():
     wins = {}
     for i in range(HANDS):
-        g = Game(players=PLAYERS)
+        g = Game(players=PLAYERS, num_players=NUM_PLAYERS)
         g.deal()
         outcome = g.find_outcome()
 
@@ -29,6 +30,8 @@ def run_hands():
             wins[outcome[0]["id"]] += 1
 
     for p in wins.keys():
+        if p >= len(PLAYERS):
+            continue
         h = PLAYERS[p].get_hand()
         print(
             "Player %d Win Percent [%s %s]: %d"

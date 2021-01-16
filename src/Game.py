@@ -15,9 +15,8 @@ class Game:
                 self.players.append(p)
                 for c in p.get_hand():
                     excluded_cards.append(c)
-        else:
-            for p in range(1, num_players):
-                self.players.append(Player(id=p))
+        for p in range(len(players), num_players):
+            self.players.append(Player(id=p))
         self.deck = Deck(exclude=excluded_cards)
         self.deck.shuffle()
         self.house = []
