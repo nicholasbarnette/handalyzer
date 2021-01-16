@@ -56,121 +56,11 @@ class Game:
         }
         for p in self.players:
             pool = p.get_hand() + self.house
-
-            if self._is_royal_flush(pool):
-                hand_outcomes["royal_flush"].append(
-                    {"id": p.get_id(), "type": "royal_flush", "value": 55}
-                )
-            elif self._is_straight_flush(pool):
-                p_hand = self._calculate_straight_value(self._get_flush_pool(pool))
-                hand_outcomes["straight_flush"] = self._insert_ordered(
-                    hand_outcomes["straight_flush"],
-                    {"id": p.get_id(), "type": "straight_flush", "value": p_hand},
-                )
-            elif self._is_four_of_kind(pool):
-                if self._find_duplicates(pool[0].get_value(), pool) == 4:
-                    hand_outcomes["four_kind"] = self._insert_ordered(
-                        hand_outcomes["four_kind"],
-                        {
-                            "id": p.get_id(),
-                            "type": "four_kind",
-                            "value": pool[0].get_value(),
-                        },
-                    )
-                else:
-                    hand_outcomes["four_kind"] = self._insert_ordered(
-                        hand_outcomes["four_kind"],
-                        {
-                            "id": p.get_id(),
-                            "type": "four_kind",
-                            "value": pool[1].get_value(),
-                        },
-                    )
-            elif self._is_full_house(pool):
-                if self._find_duplicates(pool[0].get_value(), pool) == 3:
-                    hand_outcomes["full_house"] = self._insert_ordered(
-                        hand_outcomes["full_house"],
-                        {
-                            "id": p.get_id(),
-                            "type": "full_house",
-                            "value": pool[0].get_value(),
-                        },
-                    )
-                else:
-                    hand_outcomes["full_house"] = self._insert_ordered(
-                        hand_outcomes["full_house"],
-                        {
-                            "id": p.get_id(),
-                            "type": "full_house",
-                            "value": pool[1].get_value(),
-                        },
-                    )
-            elif self._is_flush(pool):
-                hand_outcomes["flush"].append(
-                    {"id": p.get_id(), "type": "flush", "value": 55}
-                )
-            elif self._is_straight(pool):
-                p_hand = self._calculate_straight_value(pool)
-                hand_outcomes["straight"] = self._insert_ordered(
-                    hand_outcomes["straight"],
-                    {"id": p.get_id(), "type": "straight", "value": p_hand},
-                )
-            elif self._is_three_of_kind(pool):
-                if self._find_duplicates(pool[0].get_value(), pool) == 3:
-                    hand_outcomes["three_kind"] = self._insert_ordered(
-                        hand_outcomes["three_kind"],
-                        {
-                            "id": p.get_id(),
-                            "type": "three_kind",
-                            "value": pool[0].get_value(),
-                        },
-                    )
-                else:
-                    hand_outcomes["three_kind"] = self._insert_ordered(
-                        hand_outcomes["three_kind"],
-                        {
-                            "id": p.get_id(),
-                            "type": "three_kind",
-                            "value": pool[1].get_value(),
-                        },
-                    )
-            elif self._is_two_pair(pool):
-                if (
-                    self._find_duplicates(pool[0].get_value(), pool) == 2
-                    and self._find_duplicates(pool[1].get_value(), pool) == 2
-                ):
-                    hand_outcomes["two_pair"] = self._insert_ordered(
-                        hand_outcomes["two_pair"],
-                        {
-                            "id": p.get_id(),
-                            "type": "two_pair",
-                            "value": pool[0].get_value()
-                            if pool[0].get_value() > pool[1].get_value()
-                            else pool[1].get_value(),
-                        },
-                    )
-            elif self._is_pair(pool):
-                hand_outcomes["pair"] = self._insert_ordered(
-                    hand_outcomes["pair"],
-                    {
-                        "id": p.get_id(),
-                        "type": "pair",
-                        "value": pool[0].get_value() + pool[1].get_value(),
-                    },
-                )
-            else:
-                h = 0
-                for c in p.get_hand():
-                    h = max(h, c.get_value())
-                hand_outcomes["high"] = self._insert_ordered(
-                    hand_outcomes["high"],
-                    {
-                        "id": p.get_id(),
-                        "type": "high",
-                        "value": h,
-                    },
-                )
-
+            t = self._determine_hand_value(p.get_id(), pool)
+            hand_outcomes[t["type"]] = self._insert_ordered(
+                hand_outcomes[t["type"]],
+                t,
+            )
         out = []
         for k in hand_outcomes.keys():
             out = out + hand_outcomes[k]
@@ -178,12 +68,17 @@ class Game:
 
     def _determine_hand_value(self, id, pool):
         if self._is_royal_flush(pool):
-            return {"id": id, "type": "royal_flush", "value": 55}
+            return {"id": id, "type": "royal_flush", "value": 55, "decider": []}
         elif self._is_straight_flush(pool):
             return {
                 "id": id,
                 "type": "straight_flush",
                 "value": self._calculate_straight_value(self._get_flush_pool(pool)),
+                "decider": self._get_tie_breaker(
+                    self._get_flush_pool(pool),
+                    [],
+                    5,
+                ),
             }
         elif self._is_four_of_kind(pool):
             return {
@@ -192,6 +87,15 @@ class Game:
                 "value": pool[0].get_value()
                 if self._find_duplicates(pool[0].get_value(), pool) == 4
                 else pool[1].get_value(),
+                "decider": self._get_tie_breaker(
+                    pool,
+                    [
+                        pool[0].get_value()
+                        if self._find_duplicates(pool[0].get_value(), pool) == 4
+                        else pool[1].get_value()
+                    ],
+                    1,
+                ),
             }
         elif self._is_full_house(pool):
             return {
@@ -200,18 +104,36 @@ class Game:
                 "value": pool[0].get_value()
                 if self._find_duplicates(pool[0].get_value(), pool) == 3
                 else pool[1].get_value(),
+                "decider": [
+                    pool[0].get_value()
+                    if self._find_duplicates(pool[0].get_value(), pool) == 3
+                    else pool[1].get_value()
+                ]
+                * 3
+                + [
+                    pool[0].get_value()
+                    if self._find_duplicates(pool[0].get_value(), pool) == 2
+                    else pool[1].get_value()
+                ]
+                * 2,
             }
         elif self._is_flush(pool):
             return {
                 "id": id,
                 "type": "flush",
                 "value": self._calculate_value(self._get_flush_pool(pool)),
+                "decider": self._get_tie_breaker(
+                    self._get_flush_pool(pool),
+                    [],
+                    5,
+                ),
             }
         elif self._is_straight(pool):
             return {
                 "id": id,
                 "type": "straight",
                 "value": self._calculate_straight_value(pool),
+                "decider": [],
             }
         elif self._is_three_of_kind(pool):
             return {
@@ -220,6 +142,15 @@ class Game:
                 "value": pool[0].get_value()
                 if self._find_duplicates(pool[0].get_value(), pool) == 3
                 else pool[1].get_value(),
+                "decider": self._get_tie_breaker(
+                    pool,
+                    [
+                        pool[0].get_value()
+                        if self._find_duplicates(pool[0].get_value(), pool) == 3
+                        else pool[1].get_value()
+                    ],
+                    2,
+                ),
             }
         elif self._is_two_pair(pool):
             return {
@@ -228,22 +159,52 @@ class Game:
                 "value": pool[0].get_value()
                 if pool[0].get_value() > pool[1].get_value()
                 else pool[1].get_value(),
+                "decider": self._get_tie_breaker(
+                    pool, [pool[0].get_value(), pool[1].get_value()], 1
+                ),
             }
         elif self._is_pair(pool):
             return {
                 "id": id,
                 "type": "pair",
-                "value": pool[0].get_value() + pool[1].get_value(),
+                "value": pool[0].get_value()
+                if self._find_duplicates(pool[0].get_value(), pool) == 2
+                else pool[1].get_value(),
+                "decider": self._get_tie_breaker(
+                    pool,
+                    [
+                        pool[0].get_value()
+                        if self._find_duplicates(pool[0].get_value(), pool) == 2
+                        else pool[1].get_value()
+                    ],
+                    3,
+                ),
             }
         else:
-            h = 0
-            for c in [pool[0], pool[1]]:
-                h = max(h, c.get_value())
+            h = pool[0] if pool[0].get_value() > pool[1].get_value() else pool[1]
             return {
                 "id": id,
                 "type": "high",
-                "value": h,
+                "value": h.get_value(),
+                "decider": self._get_tie_breaker(pool, [h.get_value()], 4),
             }
+
+    def _get_tie_breaker(self, pool, match, n_kickers):
+        p = pool.copy()
+        tb = []
+        i = len(pool) - 1
+        while i >= 0:
+            c = pool[i]
+            if c.get_value() in match:
+                tb.append(c.get_value())
+                del p[i]
+            i -= 1
+        tb = sorted(tb, reverse=True)
+        cc = sorted(p, key=lambda c: c.get_value(), reverse=True)
+        for c in cc:
+            if len(tb) < 5:
+                tb.append(c.get_value())
+        return tb
 
     def _get_flush_pool(self, pool):
         cards = []
@@ -298,13 +259,23 @@ class Game:
             na.append(o)
         else:
             for i, p in enumerate(na):
-                if o["value"] > p["value"]:
+                if o["value"] >= p["value"] and self._find_winner(
+                    o["decider"], p["decider"]
+                ):
                     na.insert(i, o)
                     break
                 elif i == len(na) - 1:
                     na.append(o)
                     break
         return na
+
+    def _find_winner(self, a, b):
+        for i in range(len(a)):
+            if a[i] > b[i]:
+                return True
+            elif a[i] < b[i]:
+                return False
+        return False
 
     # Hand value highest to lowest
     # 1. Royal Flush

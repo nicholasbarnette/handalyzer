@@ -5,15 +5,19 @@ from Card import Card
 
 PLAYERS = [
     Player(
-        id=0, hand=[Card(rank="Ace", suit="Diamond"), Card(rank="Ace", suit="Spade")]
+        id=0, hand=[Card(rank="Ace", suit="Diamond"), Card(rank="Queen", suit="Spade")]
     ),
-    Player(id=1, hand=[Card(rank="Ace", suit="Club"), Card(rank="Ace", suit="Heart")]),
+    Player(id=1, hand=[Card(rank="Ace", suit="Club"), Card(rank="King", suit="Heart")]),
     Player(
         id=2,
         hand=[Card(rank="Queen", suit="Diamond"), Card(rank="Jack", suit="Spade")],
     ),
+    Player(
+        id=3,
+        hand=[Card(rank="Queen", suit="Heart"), Card(rank="Two", suit="Spade")],
+    ),
 ]
-HANDS = 10000
+HANDS = 1000
 NUM_PLAYERS = 4
 
 
@@ -24,12 +28,16 @@ def run_hands():
         g.deal()
         outcome = g.find_outcome()
 
+        # print(g.get_house())
+        # for o in outcome:
+        #     print(o)
+
         if not outcome[0]["id"] in wins.keys():
             wins[outcome[0]["id"]] = 1
         else:
             wins[outcome[0]["id"]] += 1
 
-    for p in wins.keys():
+    for p in sorted(wins.keys()):
         if p >= len(PLAYERS):
             continue
         h = PLAYERS[p].get_hand()

@@ -597,31 +597,45 @@ class TestGame(unittest.TestCase):
 
     def test_insert_ordered(self):
         self.assertSequenceEqual(
-            self.game._insert_ordered([], {"id": 0, "value": 55}),
-            [{"id": 0, "value": 55}],
+            self.game._insert_ordered(
+                [], {"id": 0, "type": "royal_flush", "value": 55, "decider": []}
+            ),
+            [{"id": 0, "type": "royal_flush", "value": 55, "decider": []}],
         )
         self.assertSequenceEqual(
-            self.game._insert_ordered([{"id": 0, "value": 55}], {"id": 0, "value": 58}),
-            [{"id": 0, "value": 58}, {"id": 0, "value": 55}],
+            self.game._insert_ordered(
+                [{"id": 0, "type": "royal_flush", "value": 55, "decider": []}],
+                {"id": 0, "type": "royal_flush", "value": 55, "decider": []},
+            ),
+            [
+                {"id": 0, "type": "royal_flush", "value": 55, "decider": []},
+                {"id": 0, "type": "royal_flush", "value": 55, "decider": []},
+            ],
         )
         self.assertSequenceEqual(
-            self.game._insert_ordered([{"id": 0, "value": 55}], {"id": 0, "value": 52}),
-            [{"id": 0, "value": 55}, {"id": 0, "value": 52}],
+            self.game._insert_ordered(
+                [{"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 10, 8, 7]}],
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 11, 8, 7]},
+            ),
+            [
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 11, 8, 7]},
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 10, 8, 7]},
+            ],
         )
         self.assertSequenceEqual(
             self.game._insert_ordered(
                 [
-                    {"id": 0, "value": 55},
-                    {"id": 0, "value": 52},
-                    {"id": 0, "value": 51},
+                    {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 13, 8, 7]},
+                    {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 12, 8, 7]},
+                    {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 8, 8, 7]},
                 ],
-                {"id": 0, "value": 53},
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 10, 8, 7]},
             ),
             [
-                {"id": 0, "value": 55},
-                {"id": 0, "value": 53},
-                {"id": 0, "value": 52},
-                {"id": 0, "value": 51},
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 13, 8, 7]},
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 12, 8, 7]},
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 10, 8, 7]},
+                {"id": 0, "type": "pair", "value": 4, "decider": [4, 4, 8, 8, 7]},
             ],
         )
 
@@ -689,7 +703,7 @@ class TestGame(unittest.TestCase):
                     Card("Three", "Diamond"),
                 ],
             ),
-            {"id": "0", "type": "royal_flush", "value": 55},
+            {"id": "0", "type": "royal_flush", "value": 55, "decider": []},
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -704,7 +718,12 @@ class TestGame(unittest.TestCase):
                     Card("Three", "Diamond"),
                 ],
             ),
-            {"id": "0", "type": "straight_flush", "value": 50},
+            {
+                "id": "0",
+                "type": "straight_flush",
+                "value": 50,
+                "decider": [12, 11, 10, 9, 8],
+            },
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -719,7 +738,12 @@ class TestGame(unittest.TestCase):
                     Card("Three", "Diamond"),
                 ],
             ),
-            {"id": "0", "type": "four_kind", "value": 12},
+            {
+                "id": "0",
+                "type": "four_kind",
+                "value": 12,
+                "decider": [12, 12, 12, 12, 11],
+            },
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -734,7 +758,12 @@ class TestGame(unittest.TestCase):
                     Card("Three", "Diamond"),
                 ],
             ),
-            {"id": "0", "type": "full_house", "value": 12},
+            {
+                "id": "0",
+                "type": "full_house",
+                "value": 12,
+                "decider": [12, 12, 12, 11, 11],
+            },
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -749,7 +778,12 @@ class TestGame(unittest.TestCase):
                     Card("Nine", "Spade"),
                 ],
             ),
-            {"id": "0", "type": "flush", "value": 47},
+            {
+                "id": "0",
+                "type": "flush",
+                "value": 47,
+                "decider": [13, 9, 8, 7, 5],
+            },
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -764,7 +798,7 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                 ],
             ),
-            {"id": "0", "type": "straight", "value": 25},
+            {"id": "0", "type": "straight", "value": 25, "decider": []},
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -779,7 +813,12 @@ class TestGame(unittest.TestCase):
                     Card("Ace", "Club"),
                 ],
             ),
-            {"id": "0", "type": "three_kind", "value": 9},
+            {
+                "id": "0",
+                "type": "three_kind",
+                "value": 9,
+                "decider": [9, 9, 9, 13, 13],
+            },
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -794,7 +833,7 @@ class TestGame(unittest.TestCase):
                     Card("Nine", "Club"),
                 ],
             ),
-            {"id": "0", "type": "two_pair", "value": 9},
+            {"id": "0", "type": "two_pair", "value": 9, "decider": [9, 9, 1, 1, 13]},
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -809,7 +848,13 @@ class TestGame(unittest.TestCase):
                     Card("Nine", "Club"),
                 ],
             ),
-            {"id": "0", "type": "pair", "value": 7},
+            {
+                "id": "0",
+                "type": "pair",
+                "value": 5,
+                "decider": 51,
+                "decider": [5, 5, 13, 13, 8],
+            },
         )
         self.assertEqual(
             game._determine_hand_value(
@@ -824,7 +869,7 @@ class TestGame(unittest.TestCase):
                     Card("Nine", "Club"),
                 ],
             ),
-            {"id": "0", "type": "high", "value": 5},
+            {"id": "0", "type": "high", "value": 5, "decider": [5, 13, 13, 8, 7]},
         )
 
     def test_get_flush_pool(self):
@@ -902,4 +947,101 @@ class TestGame(unittest.TestCase):
                 ],
             ),
             28,
+        )
+
+    def test_get_tie_breaker(self):
+        game = Game()
+        self.assertEqual(
+            game._get_tie_breaker(
+                [
+                    Card("Two", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+                [2],
+                4,
+            ),
+            [10, 7, 6, 5, 4],
+        )
+        self.assertEqual(
+            game._get_tie_breaker(
+                [
+                    Card("Two", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Two", "Diamond"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+                [2],
+                3,
+            ),
+            [10, 7, 6, 4, 3],
+        )
+        self.assertEqual(
+            game._get_tie_breaker(
+                [
+                    Card("Two", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Two", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Eight", "Spade"),
+                ],
+                [1, 10],
+                1,
+            ),
+            [10, 10, 1, 1, 7],
+        )
+        self.assertEqual(
+            game._get_tie_breaker(
+                [
+                    Card("Two", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Jack", "Heart"),
+                    Card("Two", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Eight", "Spade"),
+                ],
+                [10],
+                2,
+            ),
+            [10, 10, 10, 7, 3],
+        )
+        self.assertEqual(
+            game._get_tie_breaker(
+                [
+                    Card("Two", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+                [],
+                5,
+            ),
+            [10, 7, 3, 2, 1],
+        )
+        self.assertEqual(
+            game._get_tie_breaker(
+                [
+                    Card("Two", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Jack", "Heart"),
+                    Card("Two", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Jack", "Club"),
+                ],
+                [10],
+                2,
+            ),
+            [10, 10, 10, 10, 3],
         )
