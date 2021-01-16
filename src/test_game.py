@@ -12,44 +12,80 @@ class TestGame(unittest.TestCase):
         self.assertEqual(
             self.game._is_royal_flush(
                 [
-                    Card("Ten", "Spade"),
-                    Card("Jack", "Spade"),
-                    Card("Queen", "Spade"),
-                    Card("King", "Spade"),
-                    Card("Ace", "Spade"),
-                ]
+                    Card("Two", "Diamond"),
+                    Card("Three", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Ten", "Diamond"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Diamond"),
+                ],
+            ),
+            False,
+        )
+        self.assertEqual(
+            self.game._is_royal_flush(
+                [
+                    Card("Two", "Diamond"),
+                    Card("King", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Ten", "Diamond"),
+                    Card("Ace", "Diamond"),
+                    Card("Three", "Diamond"),
+                ],
             ),
             True,
         )
         self.assertEqual(
             self.game._is_royal_flush(
                 [
-                    Card("Ten", "Spade"),
-                    Card("Jack", "Heart"),
-                    Card("Queen", "Spade"),
-                    Card("King", "Spade"),
-                    Card("Ace", "Spade"),
-                ]
+                    Card("King", "Diamond"),
+                    Card("Two", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Ten", "Diamond"),
+                    Card("Ace", "Diamond"),
+                    Card("Three", "Diamond"),
+                ],
             ),
-            False,
+            True,
         )
         self.assertEqual(
             self.game._is_royal_flush(
                 [
-                    Card("Two", "Spade"),
-                    Card("Jack", "Spade"),
-                    Card("Queen", "Spade"),
-                    Card("King", "Spade"),
-                    Card("Ace", "Spade"),
-                ]
+                    Card("Ace", "Diamond"),
+                    Card("King", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Ten", "Diamond"),
+                    Card("Two", "Diamond"),
+                    Card("Three", "Diamond"),
+                ],
             ),
-            False,
+            True,
         )
 
     def test_is_straight_flush(self):
         self.assertEqual(
             self.game._is_straight_flush(
                 [
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Ten", "Spade"),
+                    Card("Ace", "Spade"),
+                ]
+            ),
+            True,
+        )
+        self.assertEqual(
+            self.game._is_straight_flush(
+                [
+                    Card("Ten", "Spade"),
+                    Card("Ace", "Spade"),
                     Card("Two", "Spade"),
                     Card("Three", "Spade"),
                     Card("Four", "Spade"),
@@ -67,6 +103,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Spade"),
                     Card("Jack", "Spade"),
                     Card("Queen", "Spade"),
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
                 ]
             ),
             True,
@@ -79,6 +117,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Diamond"),
                     Card("Jack", "Spade"),
                     Card("Queen", "Spade"),
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
                 ]
             ),
             False,
@@ -91,6 +131,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Spade"),
                     Card("Jack", "Spade"),
                     Card("King", "Spade"),
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
                 ]
             ),
             False,
@@ -105,6 +147,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
                 ],
             ),
             False,
@@ -117,6 +161,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Club"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
                 ],
             ),
             False,
@@ -129,6 +175,22 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Club"),
                     Card("Ten", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
+                ],
+            ),
+            True,
+        )
+        self.assertEqual(
+            self.game._is_four_of_kind(
+                [
+                    Card("Ten", "Spade"),
+                    Card("Ace", "Spade"),
+                    Card("Ten", "Diamond"),
+                    Card("Ten", "Club"),
+                    Card("Ten", "Heart"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
                 ],
             ),
             True,
@@ -143,6 +205,8 @@ class TestGame(unittest.TestCase):
                     Card("Three", "Heart"),
                     Card("Two", "Spade"),
                     Card("Two", "Heart"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
                 ]
             ),
             True,
@@ -155,6 +219,22 @@ class TestGame(unittest.TestCase):
                     Card("Four", "Heart"),
                     Card("Two", "Spade"),
                     Card("Two", "Heart"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
+                ]
+            ),
+            False,
+        )
+        self.assertEqual(
+            self.game._is_full_house(
+                [
+                    Card("Three", "Spade"),
+                    Card("Three", "Diamond"),
+                    Card("Four", "Heart"),
+                    Card("Two", "Spade"),
+                    Card("Two", "Heart"),
+                    Card("Seven", "Spade"),
+                    Card("Three", "Heart"),
                 ]
             ),
             False,
@@ -167,6 +247,8 @@ class TestGame(unittest.TestCase):
                     Card("Three", "Heart"),
                     Card("Two", "Spade"),
                     Card("Four", "Heart"),
+                    Card("Seven", "Spade"),
+                    Card("Nine", "Spade"),
                 ]
             ),
             False,
@@ -181,6 +263,22 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Nine", "Spade"),
+                ]
+            ),
+            True,
+        )
+        self.assertEqual(
+            self.game._is_flush(
+                [
+                    Card("Ten", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Eight", "Spade"),
+                    Card("Two", "Spade"),
+                    Card("Ace", "Spade"),
+                    Card("Six", "Diamond"),
+                    Card("Nine", "Diamond"),
                 ]
             ),
             True,
@@ -192,7 +290,23 @@ class TestGame(unittest.TestCase):
                     Card("Five", "Spade"),
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
-                    Card("Jack", "Spade"),
+                    Card("Ace", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Nine", "Diamond"),
+                ]
+            ),
+            True,
+        )
+        self.assertEqual(
+            self.game._is_flush(
+                [
+                    Card("Ten", "Diamond"),
+                    Card("Five", "Diamond"),
+                    Card("Eight", "Spade"),
+                    Card("Two", "Spade"),
+                    Card("Ace", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Nine", "Diamond"),
                 ]
             ),
             False,
@@ -207,6 +321,8 @@ class TestGame(unittest.TestCase):
                     Card("Four", "Spade"),
                     Card("Five", "Spade"),
                     Card("Six", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
                 ]
             ),
             True,
@@ -219,6 +335,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Spade"),
                     Card("Jack", "Spade"),
                     Card("Queen", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
                 ]
             ),
             True,
@@ -229,6 +347,8 @@ class TestGame(unittest.TestCase):
                     Card("Two", "Diamond"),
                     Card("Four", "Spade"),
                     Card("Five", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
                     Card("Seven", "Spade"),
                     Card("Eight", "Spade"),
                 ]
@@ -245,6 +365,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Club"),
                     Card("King", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("King", "Diamond"),
+                    Card("Ace", "Club"),
                 ],
             ),
             True,
@@ -257,6 +379,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("King", "Diamond"),
+                    Card("Ace", "Club"),
                 ],
             ),
             False,
@@ -271,6 +395,22 @@ class TestGame(unittest.TestCase):
                     Card("Two", "Club"),
                     Card("Ten", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Club"),
+                    Card("Nine", "Club"),
+                ],
+            ),
+            True,
+        )
+        self.assertEqual(
+            self.game._is_two_pair(
+                [
+                    Card("Ten", "Spade"),
+                    Card("Two", "Diamond"),
+                    Card("Two", "Club"),
+                    Card("Ten", "Heart"),
+                    Card("Ace", "Spade"),
+                    Card("Ace", "Club"),
+                    Card("Nine", "Club"),
                 ],
             ),
             True,
@@ -283,6 +423,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Club"),
+                    Card("Nine", "Club"),
                 ],
             ),
             False,
@@ -297,6 +439,8 @@ class TestGame(unittest.TestCase):
                     Card("Two", "Club"),
                     Card("King", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             True,
@@ -309,6 +453,8 @@ class TestGame(unittest.TestCase):
                     Card("Two", "Club"),
                     Card("King", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             True,
@@ -321,6 +467,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             False,
@@ -336,6 +484,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             0,
@@ -349,6 +499,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             1,
@@ -362,6 +514,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             2,
@@ -375,6 +529,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Club"),
                     Card("Two", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             3,
@@ -388,6 +544,8 @@ class TestGame(unittest.TestCase):
                     Card("Ten", "Club"),
                     Card("Ten", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Ace", "Diamond"),
+                    Card("King", "Spade"),
                 ],
             ),
             4,
@@ -402,6 +560,8 @@ class TestGame(unittest.TestCase):
                     Card("Two", "Club"),
                     Card("Ten", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Eight", "Heart"),
+                    Card("King", "Spade"),
                 ],
             ),
             9,
@@ -414,6 +574,8 @@ class TestGame(unittest.TestCase):
                     Card("Two", "Club"),
                     Card("Ten", "Heart"),
                     Card("Ace", "Spade"),
+                    Card("Eight", "Heart"),
+                    Card("King", "Spade"),
                 ],
             ),
             9,
@@ -426,6 +588,8 @@ class TestGame(unittest.TestCase):
                     Card("Eight", "Spade"),
                     Card("Three", "Spade"),
                     Card("Ace", "Spade"),
+                    Card("Eight", "Heart"),
+                    Card("King", "Spade"),
                 ],
             ),
             9,
@@ -465,3 +629,277 @@ class TestGame(unittest.TestCase):
         game = Game()
         game.deal()
         self.assertEqual(len(game.find_outcome()), len(game.players))
+
+    def test_calculate_straight_value(self):
+        self.assertEqual(
+            self.game._calculate_straight_value(
+                [
+                    Card("Eight", "Spade"),
+                    Card("Nine", "Diamond"),
+                    Card("Ten", "Spade"),
+                    Card("Jack", "Spade"),
+                    Card("Queen", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ]
+            ),
+            45,
+        )
+        self.assertEqual(
+            self.game._calculate_straight_value(
+                [
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ]
+            ),
+            25,
+        )
+        self.assertEqual(
+            self.game._calculate_straight_value(
+                [
+                    Card("Two", "Diamond"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ]
+            ),
+            0,
+        )
+
+    def test_determine_hand_value(self):
+        game = Game()
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Ace", "Diamond"),
+                    Card("King", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Ten", "Diamond"),
+                    Card("Two", "Diamond"),
+                    Card("Three", "Diamond"),
+                ],
+            ),
+            {"id": "0", "type": "royal_flush", "value": 55},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("King", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("Jack", "Diamond"),
+                    Card("Ten", "Diamond"),
+                    Card("Nine", "Diamond"),
+                    Card("Two", "Diamond"),
+                    Card("Three", "Diamond"),
+                ],
+            ),
+            {"id": "0", "type": "straight_flush", "value": 50},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("King", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("King", "Spade"),
+                    Card("King", "Heart"),
+                    Card("Nine", "Diamond"),
+                    Card("King", "Club"),
+                    Card("Three", "Diamond"),
+                ],
+            ),
+            {"id": "0", "type": "four_kind", "value": 12},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("King", "Diamond"),
+                    Card("Queen", "Diamond"),
+                    Card("King", "Spade"),
+                    Card("King", "Heart"),
+                    Card("Nine", "Diamond"),
+                    Card("Queen", "Club"),
+                    Card("Three", "Diamond"),
+                ],
+            ),
+            {"id": "0", "type": "full_house", "value": 12},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Ten", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Eight", "Spade"),
+                    Card("Two", "Spade"),
+                    Card("Ace", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Nine", "Spade"),
+                ],
+            ),
+            {"id": "0", "type": "flush", "value": 47},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Four", "Club"),
+                    Card("Five", "Club"),
+                    Card("Six", "Club"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+            ),
+            {"id": "0", "type": "straight", "value": 25},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Ten", "Spade"),
+                    Card("Ten", "Diamond"),
+                    Card("Ten", "Club"),
+                    Card("King", "Heart"),
+                    Card("Ace", "Spade"),
+                    Card("King", "Diamond"),
+                    Card("Ace", "Club"),
+                ],
+            ),
+            {"id": "0", "type": "three_kind", "value": 9},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Ten", "Spade"),
+                    Card("Two", "Diamond"),
+                    Card("Two", "Club"),
+                    Card("Ten", "Heart"),
+                    Card("Ace", "Spade"),
+                    Card("Ace", "Club"),
+                    Card("Nine", "Club"),
+                ],
+            ),
+            {"id": "0", "type": "two_pair", "value": 9},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Six", "Spade"),
+                    Card("Three", "Diamond"),
+                    Card("Eight", "Club"),
+                    Card("Six", "Heart"),
+                    Card("Ace", "Spade"),
+                    Card("Ace", "Club"),
+                    Card("Nine", "Club"),
+                ],
+            ),
+            {"id": "0", "type": "pair", "value": 7},
+        )
+        self.assertEqual(
+            game._determine_hand_value(
+                "0",
+                [
+                    Card("Six", "Spade"),
+                    Card("Three", "Diamond"),
+                    Card("Eight", "Club"),
+                    Card("Five", "Heart"),
+                    Card("Ace", "Spade"),
+                    Card("Ace", "Club"),
+                    Card("Nine", "Club"),
+                ],
+            ),
+            {"id": "0", "type": "high", "value": 5},
+        )
+
+    def test_get_flush_pool(self):
+        game = Game()
+        c1 = Card("Ten", "Spade")
+        c2 = Card("Five", "Heart")
+        c3 = Card("Eight", "Diamond")
+        c4 = Card("Two", "Spade")
+        c5 = Card("Ace", "Spade")
+        c6 = Card("Six", "Spade")
+        c7 = Card("Nine", "Spade")
+        self.assertEqual(
+            game._get_flush_pool(
+                [c1, c2, c3, c4, c5, c6, c7],
+            ),
+            [c1, c4, c5, c6, c7],
+        )
+        c1 = Card("Ten", "Heart")
+        c2 = Card("Five", "Spade")
+        c3 = Card("Eight", "Diamond")
+        c4 = Card("Two", "Spade")
+        c5 = Card("Ace", "Spade")
+        c6 = Card("Six", "Heart")
+        c7 = Card("Nine", "Spade")
+        self.assertEqual(
+            game._get_flush_pool(
+                [c1, c2, c3, c4, c5, c6, c7],
+            ),
+            [],
+        )
+
+    def test_calculate_straight_value(self):
+        game = Game()
+        self.assertEqual(
+            game._calculate_straight_value(
+                [
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+            ),
+            25,
+        )
+        self.assertEqual(
+            game._calculate_straight_value(
+                [
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Two", "Heart"),
+                    Card("Six", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+            ),
+            0,
+        )
+
+    def test_calculate_value(self):
+        game = Game()
+        self.assertEqual(
+            game._calculate_value(
+                [
+                    Card("Two", "Spade"),
+                    Card("Three", "Spade"),
+                    Card("Four", "Spade"),
+                    Card("Five", "Spade"),
+                    Card("Six", "Spade"),
+                    Card("Seven", "Spade"),
+                    Card("Eight", "Spade"),
+                ],
+            ),
+            28,
+        )

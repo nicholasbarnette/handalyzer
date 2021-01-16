@@ -21,7 +21,7 @@ class Deck:
         return d
 
     def shuffle(self):
-        for i in range(0, 300):
+        for i in range(0, 100):
             a = randint(0, self.length - 1)
             b = randint(0, self.length - 1)
             if a == b:

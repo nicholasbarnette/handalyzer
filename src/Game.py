@@ -58,7 +58,7 @@ class Game:
                     {"id": p.get_id(), "type": "royal_flush", "value": 55}
                 )
             elif self._is_straight_flush(pool):
-                p_hand = self._calculate_hand_value(pool)
+                p_hand = self._calculate_straight_value(self._get_flush_pool(pool))
                 hand_outcomes["straight_flush"] = self._insert_ordered(
                     hand_outcomes["straight_flush"],
                     {"id": p.get_id(), "type": "straight_flush", "value": p_hand},
@@ -70,7 +70,7 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "four_kind",
-                            "value": pool[0].get_value() * 4,
+                            "value": pool[0].get_value(),
                         },
                     )
                 else:
@@ -79,7 +79,7 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "four_kind",
-                            "value": pool[1].get_value() * 4,
+                            "value": pool[1].get_value(),
                         },
                     )
             elif self._is_full_house(pool):
@@ -89,7 +89,7 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "full_house",
-                            "value": pool[0].get_value() * 3 + pool[1].get_value() * 2,
+                            "value": pool[0].get_value(),
                         },
                     )
                 else:
@@ -98,7 +98,7 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "full_house",
-                            "value": pool[0].get_value() * 2 + pool[1].get_value() * 3,
+                            "value": pool[1].get_value(),
                         },
                     )
             elif self._is_flush(pool):
@@ -106,7 +106,7 @@ class Game:
                     {"id": p.get_id(), "type": "flush", "value": 55}
                 )
             elif self._is_straight(pool):
-                p_hand = self._calculate_hand_value(pool)
+                p_hand = self._calculate_straight_value(pool)
                 hand_outcomes["straight"] = self._insert_ordered(
                     hand_outcomes["straight"],
                     {"id": p.get_id(), "type": "straight", "value": p_hand},
@@ -118,7 +118,7 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "three_kind",
-                            "value": pool[0].get_value() * 3,
+                            "value": pool[0].get_value(),
                         },
                     )
                 else:
@@ -127,7 +127,7 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "three_kind",
-                            "value": pool[1].get_value() * 3,
+                            "value": pool[1].get_value(),
                         },
                     )
             elif self._is_two_pair(pool):
@@ -140,28 +140,20 @@ class Game:
                         {
                             "id": p.get_id(),
                             "type": "two_pair",
-                            "value": pool[0].get_value() * 2 + pool[1].get_value() * 2,
+                            "value": pool[0].get_value()
+                            if pool[0].get_value() > pool[1].get_value()
+                            else pool[1].get_value(),
                         },
                     )
             elif self._is_pair(pool):
-                if self._find_duplicates(pool[0].get_value(), pool) == 2:
-                    hand_outcomes["pair"] = self._insert_ordered(
-                        hand_outcomes["pair"],
-                        {
-                            "id": p.get_id(),
-                            "type": "pair",
-                            "value": pool[0].get_value() * 2,
-                        },
-                    )
-                else:
-                    hand_outcomes["pair"] = self._insert_ordered(
-                        hand_outcomes["pair"],
-                        {
-                            "id": p.get_id(),
-                            "type": "pair",
-                            "value": pool[1].get_value() * 2,
-                        },
-                    )
+                hand_outcomes["pair"] = self._insert_ordered(
+                    hand_outcomes["pair"],
+                    {
+                        "id": p.get_id(),
+                        "type": "pair",
+                        "value": pool[0].get_value() + pool[1].get_value(),
+                    },
+                )
             else:
                 h = 0
                 for c in p.get_hand():
@@ -180,11 +172,121 @@ class Game:
             out = out + hand_outcomes[k]
         return out
 
-    def _calculate_hand_value(self, pool):
-        hand_value = 0
+    def _determine_hand_value(self, id, pool):
+        if self._is_royal_flush(pool):
+            return {"id": id, "type": "royal_flush", "value": 55}
+        elif self._is_straight_flush(pool):
+            return {
+                "id": id,
+                "type": "straight_flush",
+                "value": self._calculate_straight_value(self._get_flush_pool(pool)),
+            }
+        elif self._is_four_of_kind(pool):
+            return {
+                "id": id,
+                "type": "four_kind",
+                "value": pool[0].get_value()
+                if self._find_duplicates(pool[0].get_value(), pool) == 4
+                else pool[1].get_value(),
+            }
+        elif self._is_full_house(pool):
+            return {
+                "id": id,
+                "type": "full_house",
+                "value": pool[0].get_value()
+                if self._find_duplicates(pool[0].get_value(), pool) == 3
+                else pool[1].get_value(),
+            }
+        elif self._is_flush(pool):
+            return {
+                "id": id,
+                "type": "flush",
+                "value": self._calculate_value(self._get_flush_pool(pool)),
+            }
+        elif self._is_straight(pool):
+            return {
+                "id": id,
+                "type": "straight",
+                "value": self._calculate_straight_value(pool),
+            }
+        elif self._is_three_of_kind(pool):
+            return {
+                "id": id,
+                "type": "three_kind",
+                "value": pool[0].get_value()
+                if self._find_duplicates(pool[0].get_value(), pool) == 3
+                else pool[1].get_value(),
+            }
+        elif self._is_two_pair(pool):
+            return {
+                "id": id,
+                "type": "two_pair",
+                "value": pool[0].get_value()
+                if pool[0].get_value() > pool[1].get_value()
+                else pool[1].get_value(),
+            }
+        elif self._is_pair(pool):
+            return {
+                "id": id,
+                "type": "pair",
+                "value": pool[0].get_value() + pool[1].get_value(),
+            }
+        else:
+            h = 0
+            for c in [pool[0], pool[1]]:
+                h = max(h, c.get_value())
+            return {
+                "id": id,
+                "type": "high",
+                "value": h,
+            }
+
+    def _get_flush_pool(self, pool):
+        cards = []
+        suit = {}
         for c in pool:
-            hand_value += c.get_value()
-        return hand_value
+            if c.get_suit() in suit.keys():
+                suit[c.get_suit()] += 1
+            else:
+                suit[c.get_suit()] = 1
+        check_suit = None
+        for s in suit.keys():
+            if suit[s] >= 5:
+                check_suit = s
+        for c in pool:
+            if c.get_suit() == check_suit:
+                cards.append(c)
+        return cards
+
+    def _calculate_straight_value(self, pool):
+        r = []
+        for c in pool:
+            r.append(c.get_value())
+        r = sorted(r, reverse=True)
+        high = None
+        n = 0
+        hand_value = 0
+        for i, v in enumerate(r):
+            if i == 0 or high == None:
+                high = v
+                n = 1
+                hand_value = v
+            elif high - n == v:
+                n += 1
+                hand_value += v
+            else:
+                high = v
+                n = 1
+                hand_value = v
+            if n >= 5:
+                return hand_value
+        return 0
+
+    def _calculate_value(self, pool):
+        v = 0
+        for c in pool:
+            v += c.get_value()
+        return v
 
     def _insert_ordered(self, a, o):
         na = a
@@ -212,42 +314,95 @@ class Game:
     # 9. Pair
     # 10. High Card
     def _is_royal_flush(self, pool):
+        cards = {
+            "Ace": False,
+            "King": False,
+            "Queen": False,
+            "Jack": False,
+            "Ten": False,
+        }
         if not self._is_flush(pool):
             return False
-        value = 0
-        for c in pool:
-            value += c.get_value()
-        if value == 55:
-            return True
-        else:
+
+        # Determine if player has one of the royal flush cards in their hand
+        if not (
+            pool[0].get_rank() in cards.keys() or pool[1].get_rank() in cards.keys()
+        ):
             return False
 
+        # Find the entire royal flush
+        for c in pool:
+            if c.get_rank() in cards.keys():
+                cards[c.get_rank()] = True
+        for c in cards.keys():
+            if not cards[c]:
+                return False
+        return True
+
     def _is_straight_flush(self, pool):
-        if self._is_straight(pool) and self._is_flush(pool):
-            return True
+        suit = {}
+        for c in pool:
+            if c.get_suit() in suit.keys():
+                suit[c.get_suit()] += 1
+            else:
+                suit[c.get_suit()] = 1
+        check_suit = None
+        for s in suit.keys():
+            if suit[s] >= 5:
+                check_suit = s
+        if not check_suit:
+            return False
+        r = []
+        for c in pool:
+            if c.get_suit() == check_suit:
+                r.append(c.get_value())
+        r = sorted(r, reverse=True)
+        high = None
+        n = 0
+        for i, v in enumerate(r):
+            if i == 0 or high == None:
+                high = v
+                n = 1
+            elif high - n == v:
+                n += 1
+            else:
+                high = v
+                n = 1
+            if n >= 5:
+                return True
         return False
 
     def _is_flush(self, pool):
-        suit = ""
+        suit = {}
         for c in pool:
-            if suit == "":
-                suit = c.get_suit()
-            elif c.get_suit() != suit:
-                return False
-        return True
+            if c.get_suit() in suit.keys():
+                suit[c.get_suit()] += 1
+            else:
+                suit[c.get_suit()] = 1
+        for s in suit.keys():
+            if suit[s] >= 5:
+                return True
+        return False
 
     def _is_straight(self, pool):
         r = []
         for c in pool:
             r.append(c.get_value())
-        r = sorted(r)
-        low = None
-        for i, c in enumerate(r):
-            if i == 0:
-                low = c
-            elif low + i != c:
-                return False
-        return True
+        r = sorted(r, reverse=True)
+        high = None
+        n = 0
+        for i, v in enumerate(r):
+            if i == 0 or high == None:
+                high = v
+                n = 1
+            elif high - n == v:
+                n += 1
+            else:
+                high = v
+                n = 1
+            if n >= 5:
+                return True
+        return False
 
     def _is_four_of_kind(self, pool):
         if (
